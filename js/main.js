@@ -1,100 +1,101 @@
 (() => {
 
-  //variables
-  const hotspots = document.querySelectorAll(".Hotspot");
-  const materialTemplate = document.querySelector("#material-template");
-  const materialList = document.querySelector("#material-list");
+const hotspots = document.querySelectorAll(".Hotspot");
+const materialTemplate = document.querySelector("#material-template");
+const materialList = document.querySelector("#material-list");
+const loader = document.querySelector("#loader");
 
-  //This information needs to be removed then pulled with an AJAX Call using the Fetch API
-  //this is the api url https://swiftpixel.com/earbud/api/infoboxes"
 
-  const infoBoxes = [
-    {
-      title: 'Noise-cancelling microphones',
-      text: 'Noise-cancelling microphones and a rear copper shield are optimally placed to quickly detect outside noises, working together to counter noise before it disturbs your experience.',
-      image: 'images/ear-piece.jpg'
-    },
-    {
-      title: 'Comfortable fit',
-      text: 'Three pairs of ultra comfortable silicone tips are included. The tips create an acoustic seal that blocks outside audio and secures the earbuds in place.',
-      image: 'images/ear-piece.jpg'
-    },
-    {
-      title: '360 AUDIO',
-      text: '360 Audio places sound all around you, while Dolby Head Tracking™ technology delivers an incredible three-dimensional listening experience.',
-      image: 'images/ear-piece.jpg'
-    },
-    {
-      title: 'Ultra Fast Charging',
-      text: 'Charge your earbuds in 30 minutes or less with our hyper charging technology.',
-      image: 'images/ear-piece.jpg'
-    },
-  ];
 
-  //This information needs to be removed then pulled with an AJAX Call using the Fetch API
-  //this is the api url https://swiftpixel.com/earbud/api/materials"
+function getData() {
+  loader.classList.toggle("hidden");
+fetch("https://swiftpixel.com/earbud/api/materials") //fetch the information and then take the response from Json
+  .then(response => response.json())
+  .then(material => {
 
-  const materialListData = [
-    {
-      heading: "Precision-Crafted Polymers",
-      description: "Our earbuds are meticulously molded from high-quality plastics, ensuring a blend of elegance, comfort, and resilience that's second to none."
-    },
-    {
-      heading: "Luxurious Silicone Harmony",
-      description: "Our uniquely engineered ear tips are cocooned in plush silicone, delivering an opulent embrace for your ears, ensuring an unrivaled fit and exquisite audio experience."
-    },
-    {
-      heading: "Rubberized Cables",
-      description: "Experience the unparalleled freedom of movement with our flexible rubber cables that promise durability without compromise."
-    },
-    {
-      heading: "Enhanced Comfort Sensors",
-      description: "A touch of magic in the form of built-in microphones and sensors empowers your earbuds to obey your every command, making your audio journey seamless and enchanting."
-    },
-    {
-      heading: "Artistic Mesh Guard",
-      description: "Shielded by artful mesh screens, our speakers remain untarnished, keeping your listening experience pristine."
-    }
-  ];
 
-  //functions
-  function loadInfoBoxes() {
+      materialList.innerHTML = "";
 
-    //make AJAX call here
+      const ul = document.createElement("ul");
+      ul.id = "material-list";
 
-    infoBoxes.forEach((infoBox, index) => {
-      let selected = document.querySelector(`#hotspot-${index + 1}`);
+//Comecando a criar a lista
+material.forEach(results => {
+  const li = document.createElement("li");
+  const h3 = document.createElement("h3");
+ 
+h3.textContent = results.heading;
 
-      const titleElement = document.createElement('h2');
-      titleElement.textContent = infoBox.title;
 
-      const textElement = document.createElement('p');
-      textElement.textContent = infoBox.text;
 
-      selected.appendChild(titleElement);
-      selected.appendChild(textElement);
+const p = document.createElement("p");
+p.textContent = results.description;
+
+
+li.appendChild(h3);
+li.appendChild(p);
+ul.appendChild(li);
+
+      });
+      loader.classList.toggle ("hidden");
+      materialList.appendChild(ul);
+
+      
+
+  })
+
+    .catch(error =>{ 
+        console.log(error)
+        const errorMessage = document.createElement("p");
+        errorMessage.textContent = "Ops, something went wrong. Please check your connection or try again.";
+        materialList.appendChild(errorMessage);
     });
-  }
-  loadInfoBoxes();
 
-  function loadMaterialInfo() {
+}
 
-    materialListData.forEach(material => {
-       // clone the template
-    const clone = materialTemplate.content.cloneNode(true);
-    //populate with data
-    const materialHeading = clone.querySelector(".material-heading");
-    materialHeading.textContent = material.heading;
+getData();
 
-    const materialDescription = clone.querySelector(".material-description");
-    materialDescription.textContent = material.description;
 
-    materialList.appendChild(clone);
 
+function loadInfoBoxes() {
+  
+fetch("https://swiftpixel.com/earbud/api/infoboxes")
+    .then(response => response.json())
+    .then(results => {
+ 
+      for (let index = 0; index < 4; index++) {
+       
+        let selected = document.querySelector(`#hotspot-${index + 1}`);
+        const loaderHot = document.querySelector(`#loaderhot_${index + 1}`);
+        loaderHot.classList.add("hidden");
+        console.log('Its here.')
+
+        
+
+        const titleElement = document.createElement('h2');
+        titleElement.textContent = results[index].heading;
+
+        const textElement = document.createElement('p');
+        textElement.textContent = results[index].description;
+
+        selected.appendChild(titleElement);
+        selected.appendChild(textElement);
+      }
+
+
+     
     })
+    .catch(error =>{ 
+      console.log(error)
+      const errorMessage = document.createElement("p");
+      errorMessage.textContent = "Ops, something went wrong. Please check your Connection ";
+      hotspot.appendChild(errorMessage);
+    });
+}
 
-  }
-  loadMaterialInfo();
+loadInfoBoxes();
+
+  
 
 
   function showInfo() {
